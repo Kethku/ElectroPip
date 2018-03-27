@@ -1,4 +1,5 @@
 node_modules/
 build/
+.cache-loader/
 .cache/
 yarn-error.log
