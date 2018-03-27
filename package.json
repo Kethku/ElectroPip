@@ -1,0 +1,20 @@
+{
+  "productName": "ElectroPip",
+  "main": "dist/main.js",
+  "scripts": {
+    "dev": "parcel src/index.html -o",
+    "build": "parcel build src/index.html"
+  },
+  "devDependencies": {
+    "@types/mithril": "^1.1.12",
+    "@types/node": "^9.6.0",
+    "@types/webpack": "^4.1.2",
+    "ts-node": "^5.0.1",
+    "typescript": "^2.7.2",
+    "webpack": "^4.2.0"
+  },
+  "dependencies": {
+    "electron": "^1.7.10",
+    "mithril": "^1.1.6"
+  }
+}
