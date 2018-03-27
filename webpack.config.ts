@@ -12,6 +12,7 @@ var genericPlugins = [
 
 function generateConfig(plugins = genericPlugins): webpack.Configuration {
   return {
+    mode: "development",
     context: path.resolve('.'),
     module: {
       rules: [
@@ -55,7 +56,8 @@ function generateConfig(plugins = genericPlugins): webpack.Configuration {
 }
 
 function generateRendererConfig(plugins = genericPlugins) {
-  return Object.assign({
+  return {
+    ...generateConfig(plugins),
     target: 'electron-renderer',
     externals: [
       (function () {
@@ -70,7 +72,7 @@ function generateRendererConfig(plugins = genericPlugins) {
         };
       })()
     ]
-  }, generateConfig(plugins));
+  };
 }
 
 const commonOutput: webpack.Output = {
@@ -81,25 +83,29 @@ const commonOutput: webpack.Output = {
 };
 
 module.exports = [
-  Object.assign({
-    target: 'electron',
-    entry: ['./server/main'],
-    output: Object.assign({
+  {
+    ...generateConfig(),
+    target: 'electron-main',
+    entry: ['./server/server'],
+    output: {
+      ...commonOutput,
       path: path.resolve(__dirname, "build"),
       publicPath: '/'
-    }, commonOutput),
+    },
     externals: fs.readdirSync("node_modules").map((mod) => "commonjs " + mod)
-  }, generateConfig()),
-  Object.assign({
-    entry: ['./pip/pip'],
-    output: Object.assign({
-      path: path.resolve(__dirname, "build/pip"),
-      publicPath: '/pip/'
-    }, commonOutput),
-  }, generateRendererConfig([
+  },
+  {
+    ...generateRendererConfig([
       new HtmlWebpackPlugin({
         title: 'Electro Pip',
         filename: 'pip.html'
       })
-    ].concat(genericPlugins)))
+    ].concat(genericPlugins)),
+    entry: ['./pip/pip'],
+    output: {
+      ...commonOutput,
+      path: path.resolve(__dirname, "build/pip"),
+      publicPath: '/pip/'
+    }
+  }
 ];
