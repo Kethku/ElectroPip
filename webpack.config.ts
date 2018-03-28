@@ -90,7 +90,6 @@ module.exports = [
     output: {
       ...commonOutput,
       path: path.resolve(__dirname, "build"),
-      publicPath: '/'
     },
     externals: fs.readdirSync("node_modules").map((mod) => "commonjs " + mod)
   },
@@ -105,7 +104,6 @@ module.exports = [
     output: {
       ...commonOutput,
       path: path.resolve(__dirname, "build/pip"),
-      publicPath: '/pip/'
     }
   }
 ];
