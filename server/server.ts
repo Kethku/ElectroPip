@@ -31,20 +31,19 @@ let timeout: any = null;
 
 function createWindow() {
   let preloadPath = path.join(__dirname, "pip/main.js");
+  console.log("pip ready");
   win = new BrowserWindow({
     skipTaskbar: true,
-    transparent: true,
     alwaysOnTop: true,
     frame: false,
     thickFrame: true,
-    show: false,
     webPreferences: {
       preload: preloadPath
     }
   });
 
-  win.once('ready-to-show', () => {
-    console.log("pip ready");
+  win.once('dom-ready', () => {
+    console.log("showing window");
     win.show();
 
     let display = screen.getDisplayNearestPoint(screen.getCursorScreenPoint());
@@ -57,6 +56,7 @@ function createWindow() {
     };
     win.setContentBounds(bounds);
     win.webContents.send("mouseMoved", {x: -1000000, y: -1000000});
+    win.webContents.openDevTools({ mode: "detach" });
   });
 
   timeout = setInterval(async () => {
@@ -75,6 +75,7 @@ function createWindow() {
     }
   }, 16);
 
+  console.log("loading url");
   win.loadURL(process.argv[2]);
 }
 
