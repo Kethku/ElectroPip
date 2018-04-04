@@ -36,13 +36,15 @@ function createWindow() {
     skipTaskbar: true,
     alwaysOnTop: true,
     frame: false,
+    show: false,
+    transparent: true,
     thickFrame: true,
     webPreferences: {
       preload: preloadPath
     }
   });
 
-  win.once('dom-ready', () => {
+  win.once('ready-to-show', () => {
     console.log("showing window");
     win.show();
 
@@ -76,6 +78,9 @@ function createWindow() {
   }, 16);
 
   console.log("loading url");
+
+  
+
   win.loadURL(process.argv[2]);
 }
 
