@@ -1,11 +1,18 @@
-import {app, BrowserWindow, screen, ipcMain as ipc, globalShortcut} from "electron";
+import {app, BrowserWindow, screen, ipcMain as ipc, globalShortcut, dialog} from "electron";
 import * as path from "path";
 import * as url from "url";
 
 import { spawn } from 'child_process';
 import * as rl from 'readline';
 
-var keyboardProcess = spawn(path.resolve(path.join(__dirname, '../KeyboardState.exe')));
+var isElectron = 'electron' in process.versions;
+var isUsingAsar = isElectron && process.mainModule && process.mainModule.filename .includes('app.asar');
+
+function fixPathForAsarUnpack(path: string) {
+  return isUsingAsar ? path.replace('app.asar', 'app.asar.unpacked') : path;
+}
+
+var keyboardProcess = spawn(fixPathForAsarUnpack(path.resolve(path.join(__dirname, '../KeyboardState.exe'))));
 var keyboardOutput = rl.createInterface({ input: keyboardProcess.stdout, terminal: false });
 
 function readLine() {
@@ -28,6 +35,12 @@ async function keyDown(key: string) {
 
 let win;
 let timeout: any = null;
+
+function quit() {
+  if (win != null) win = null;
+  app.quit();
+  clearInterval(timeout);
+}
 
 function createWindow() {
   let preloadPath = path.join(__dirname, "pip/main.js");
@@ -61,7 +74,10 @@ function createWindow() {
     win.webContents.openDevTools({ mode: "detach" });
   });
 
+  win.on('window-all-closed', quit)
+
   timeout = setInterval(async () => {
+    if (win.closed)
     var altDown = await keyDown("ControlKey\n");
     win.setIgnoreMouseEvents(!altDown);
     var cursorScreenPoint = screen.getCursorScreenPoint();
@@ -79,9 +95,14 @@ function createWindow() {
 
   console.log("loading url");
 
-  
-
-  win.loadURL(process.argv[2]);
+  var url = process.argv[2];
+  if (url) {
+    win.loadURL(process.argv[2]);
+  } else {
+    dialog.showMessageBox({
+      "message": "Please pass a valid url as argument to show in Picture in Picture window."
+    }, quit);
+  }
 }
 
 ipc.on('errorInWindow', (event: any, data: any) => {
