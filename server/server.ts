@@ -12,7 +12,8 @@ function fixPathForAsarUnpack(path: string) {
   return isUsingAsar ? path.replace('app.asar', 'app.asar.unpacked') : path;
 }
 
-var keyboardProcess = spawn(fixPathForAsarUnpack(path.resolve(path.join(__dirname, '../KeyboardState.exe'))));
+var keyboardAppUrl = fixPathForAsarUnpack(path.resolve(path.join(__dirname, '../KeyboardState.exe')));
+var keyboardProcess = spawn(keyboardAppUrl);
 var keyboardOutput = rl.createInterface({ input: keyboardProcess.stdout, terminal: false });
 
 function readLine() {
@@ -58,7 +59,6 @@ function createWindow() {
   });
 
   win.once('ready-to-show', () => {
-    console.log("showing window");
     win.show();
 
     let display = screen.getDisplayNearestPoint(screen.getCursorScreenPoint());
@@ -71,13 +71,11 @@ function createWindow() {
     };
     win.setContentBounds(bounds);
     win.webContents.send("mouseMoved", {x: -1000000, y: -1000000});
-    win.webContents.openDevTools({ mode: "detach" });
   });
 
   win.on('window-all-closed', quit)
 
   timeout = setInterval(async () => {
-    if (win.closed)
     var altDown = await keyDown("ControlKey\n");
     win.setIgnoreMouseEvents(!altDown);
     var cursorScreenPoint = screen.getCursorScreenPoint();
@@ -89,7 +87,7 @@ function createWindow() {
         cursorScreenPoint.y > -250 && cursorScreenPoint.y < windowBounds.height + 250) {
       win.webContents.send("mouseMoved", cursorScreenPoint);
     } else {
-      win.webContents.send("mouseMoved", {x: -100000, y: -10000});
+      win.webContents.send("controlPressed");
     }
   }, 16);
 

@@ -6,10 +6,36 @@ window.onerror = function(error, url, line) {
   ipc.send('errorInWindow', error);
 }
 
+var maxRadius = 150;
+var targetRadius = 150;
+var currentRadius = 150;
+var targetOpacity = 0;
+var currentOpacity = 1;
+var x = 0;
+var y = 0;
 ipc.on("mouseMoved", (event: any, newMousePos: {x: number, y: number}) => {
-  console.log(JSON.stringify(newMousePos));
+  x = newMousePos.x;
+  y = newMousePos.y;
+  targetRadius = maxRadius;
+  targetOpacity = 0;
+});
+
+ipc.on("controlPressed", () => {
+  targetRadius = 0;
+  targetOpacity = 1;
+})
+
+setInterval(async () => {
+  console.log(`x: ${x}, y: ${y}`);
+  currentRadius += (targetRadius - currentRadius) * 0.05;
+  currentOpacity += (targetOpacity - currentOpacity) * 0.05;
   if (document.body != null) {
-    document.body.style.clipPath = `polygon(${clipPoly(newMousePos.x, newMousePos.y)})`;
+    document.body.style["-webkit-mask-image"] = `
+      radial-gradient(
+        circle at left ${x}px top ${y}px,
+          rgba(0,0,0,${currentOpacity}) 0px,
+          rgba(0,0,0,${currentOpacity}) ${currentRadius}px,
+          rgba(0,0,0,1) ${currentRadius + 50}px)`;
   }
 });
 
