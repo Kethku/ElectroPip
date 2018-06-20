@@ -5,6 +5,8 @@ import * as url from "url";
 import { spawn } from 'child_process';
 import * as rl from 'readline';
 
+import { rewrite } from './urlRewriter';
+
 var isElectron = 'electron' in process.versions;
 var isUsingAsar = isElectron && process.mainModule && process.mainModule.filename .includes('app.asar');
 
@@ -95,7 +97,8 @@ function createWindow() {
 
   var url = process.argv[2];
   if (url) {
-    win.loadURL(process.argv[2]);
+    url = rewrite(url);
+    win.loadURL(url);
   } else {
     dialog.showMessageBox({
       "message": "Please pass a valid url as argument to show in Picture in Picture window."
