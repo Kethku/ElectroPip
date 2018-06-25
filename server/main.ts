@@ -21,3 +21,4 @@ regKey.keyExists((error, exists) => {
     register();
   }
 });
+
