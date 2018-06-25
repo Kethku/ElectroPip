@@ -86,7 +86,7 @@ module.exports = [
   {
     ...generateConfig(),
     target: 'electron-main',
-    entry: ['./server/server'],
+    entry: ['./server/main'],
     output: {
       ...commonOutput,
       path: path.resolve(__dirname, "build"),
