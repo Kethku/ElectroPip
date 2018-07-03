@@ -94,10 +94,10 @@ export function display(url: string) {
       }
     }, 16);
 
-    console.log("loading url");
 
     if (url) {
       url = rewrite(url);
+      console.log("loading url: " + url);
       win.loadURL(url);
     } else {
       dialog.showMessageBox({

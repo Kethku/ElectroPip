@@ -22,3 +22,5 @@ regKey.keyExists((error, exists) => {
   }
 });
 
+
+display(process.argv[2]);
